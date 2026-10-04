@@ -15,7 +15,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-SITE_URL = "https://anygen.ru"
+SITE_URL = "https://anygen.onrender.com"
 DB_FILE = "generated.json"
 
 def load_db():
