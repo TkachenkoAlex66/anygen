@@ -1,7 +1,7 @@
 # ============================================
-#   AnyGen — 40 генераторов + шаринг
+#   AnyGen — 40+ генераторов + шаринг + прямые ссылки
 #   Домен: https://anygen.ru
-#   Запуск: gunicorn anygen:app
+#   Временный: https://anygen.onrender.com
 # ============================================
 
 from flask import Flask, render_template_string, jsonify, abort
@@ -28,6 +28,7 @@ def save_db(db):
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
 
+# ==== ФУНКЦИИ ====
 def gen_password():
     chars = string.ascii_letters + string.digits + "!@#$%^&*"
     return ''.join(random.choice(chars) for _ in range(16))
@@ -42,6 +43,7 @@ def gen_emoji():
 def gen_lottery():
     return ', '.join(str(n) for n in sorted(random.sample(range(1, 46), 6)))
 
+# ==== ГЕНЕРАТОРЫ (43 шт.) ====
 GENERATORS = [
     {"id":"password","emoji":"🔐","name":"Пароль","desc":"Надёжный пароль","type":"func","func":gen_password},
     {"id":"pin","emoji":"🔢","name":"PIN-код","desc":"4-значный код","type":"pin"},
@@ -325,6 +327,15 @@ search.addEventListener('input', () => {
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 render(GENERATORS);
+
+// Автооткрытие генератора по URL /gen/<id>
+const AUTO_OPEN = "{{ auto_open|default('') }}";
+if (AUTO_OPEN) {
+  const g = GENERATORS.find(x => x.id === AUTO_OPEN);
+  if (g) {
+    setTimeout(() => openModal(g), 300);
+  }
+}
 </script>
 </body>
 </html>
@@ -362,10 +373,25 @@ SHARE_HTML = """
 </html>
 """
 
+# ==== МАРШРУТЫ ====
+
 @app.route('/')
 def index():
     gens = [{"id":g["id"],"emoji":g["emoji"],"name":g["name"],"desc":g["desc"]} for g in GENERATORS]
-    return render_template_string(MAIN_HTML, generators=gens, count=len(gens))
+    return render_template_string(MAIN_HTML, generators=gens, count=len(gens), auto_open="")
+
+@app.route('/gen/<gen_id>')
+def gen_page(gen_id):
+    g = GENERATORS_BY_ID.get(gen_id)
+    if not g:
+        abort(404)
+    gens = [{"id":x["id"],"emoji":x["emoji"],"name":x["name"],"desc":x["desc"]} for x in GENERATORS]
+    return render_template_string(
+        MAIN_HTML,
+        generators=gens,
+        count=len(gens),
+        auto_open=gen_id
+    )
 
 @app.route('/gen/sgg/<gen_id>')
 def gen_sgg(gen_id):
