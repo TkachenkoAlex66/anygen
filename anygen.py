@@ -1,7 +1,7 @@
 # ============================================
-#   AnyGen — 40+ генераторов + шаринг + прямые ссылки
-#   Домен: https://anygen.ru
-#   Временный: https://anygen.onrender.com
+#   AnyGen — 43 генератора + шаринг + прямые ссылки
+#   Временный домен: https://anygen.onrender.com
+#   (потом заменишь на https://anygen.ru)
 # ============================================
 
 from flask import Flask, render_template_string, jsonify, abort
@@ -15,6 +15,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+# ⚠️ ВРЕМЕННЫЙ ДОМЕН — потом заменишь на "https://anygen.ru"
 SITE_URL = "https://anygen.onrender.com"
 DB_FILE = "generated.json"
 
@@ -43,7 +44,7 @@ def gen_emoji():
 def gen_lottery():
     return ', '.join(str(n) for n in sorted(random.sample(range(1, 46), 6)))
 
-# ==== ГЕНЕРАТОРЫ (43 шт.) ====
+# ==== ГЕНЕРАТОРЫ ====
 GENERATORS = [
     {"id":"password","emoji":"🔐","name":"Пароль","desc":"Надёжный пароль","type":"func","func":gen_password},
     {"id":"pin","emoji":"🔢","name":"PIN-код","desc":"4-значный код","type":"pin"},
@@ -265,7 +266,8 @@ MAIN_HTML = """
 <footer>AnyGen · anygen.ru</footer>
 
 <script>
-const SITE_URL = 'https://anygen.ru';
+// ⚠️ ВРЕМЕННЫЙ ДОМЕН — потом заменишь на 'https://anygen.ru'
+const SITE_URL = 'https://anygen.onrender.com';
 const GENERATORS = {{ generators|tojson }};
 let currentId = null;
 let currentUuid = null;
